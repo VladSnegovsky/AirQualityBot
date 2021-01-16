@@ -102,7 +102,7 @@ def msg_instructions():
            " the air level should change in order for you to receive a notification. To change it - click " \
            "<i><b>Edit Step</b></i>✍️, then choose new Step on the keyboard and after that click <i><b>" \
            "Change</b></i>.\n   Notification: to turn ON/OFF notification click <i><b>Notifications On" \
-           "</b></i>🔔/<i><b>Notifications Off</b></i>🔕.\n   To delete location - click <i><b>Delete " \
+           "</b></i>🔔 / <i><b>Notifications Off</b></i>🔕.\n   To delete location - click <i><b>Delete " \
            "Location</b></i>🗑.\n\n🔘 In <i><b>About this Bot</b></i> you will receive relevant information." \
            "\n\n🔘 In <i><b>Settings</b></i>⚙️ you can change language.\n\n\nIf you find any bug, have a " \
            "question or have any suggestions, you can write to me @snegovskyvlad."

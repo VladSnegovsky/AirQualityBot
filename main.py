@@ -206,7 +206,6 @@ def get_response_by_location(_latitude, _longitude):
 
 def get_response_by_city(_name):
     global global_response
-    print(_name)
     global_response = requests.get("https://api.waqi.info/feed/" + _name + "/?token=" + config.API_AIR_TOKEN)
     return global_response
 
