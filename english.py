@@ -73,16 +73,10 @@ def msg_here_is_the_name(name):
     return "Thx😃, here is the name for this location - <i><b>" + name + "</b></i>."
 
 def msg_about_this_bot():
-    return "Hi! My name is Vlad.\n\nI made this bot as a term paper that, after " \
-           "completion, I wanted to run on the server for permanent work.\n\nThis bot " \
-           "will notify you about changes in the level of air pollution in different " \
-           "cities.\n\nYou can add a new location by clicking <i>Select New Location</i>. " \
-           "After determining the desired location, he will ask whether to add it to your " \
-           "list of locations. Answer as you like.\n\nTo see all your locations - click " \
-           "<i>My Locations</i>. To see the current information about the location click on it. " \
-           "You will also see the settings there.\n\nIf you find any bug, have a question " \
-           "or have any suggestions, you can write to me @snegovskyvlad.\n\nThank you for " \
-           "using this bot."
+    return "Hi! My name is Vlad.\n\nI created a bot as a course robot and, when I finished, " \
+           "I launched it on the server for post-robotic. If you have a mercy, or if you " \
+           "are saying, you can write me @snegovskyvlad. You can also be amazed at the " \
+           "instructions on how to visit the bot /help."
 
 def msg_change_language():
     return "Please, select new language."
