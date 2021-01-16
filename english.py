@@ -262,7 +262,7 @@ def to_eng(place):
     """translate place to english"""
     # =============== Ukraine
     if place == "україна":
-        return "Ukraine"
+        return "ukraine"
     elif place == "countries":
         return "countries"
     elif place == "Львів":
