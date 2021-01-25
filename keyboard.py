@@ -101,7 +101,6 @@ def generate_keyboard(place, language):
     if place == "countries":
         file = open(language.translate_country(place) + ".txt", "r")
     else:
-        print(place)
         file = open(eng.to_eng(place) + ".txt", "r")
     places_array = []
     for line in file:
