@@ -2,7 +2,7 @@ import logging
 import json
 import requests
 from aiogram import Bot, Dispatcher, executor, types
-from sqlighter import SQLighter
+from DataBase import PostgreSQLDataBase
 import asyncio
 import time
 import schedule
@@ -22,7 +22,12 @@ bot = Bot(token=config.API_TG_BOT_TOKEN)
 dp = Dispatcher(bot)
 
 # Initialize connection with db
-db = SQLighter('db.db')
+import os
+import psycopg2
+
+
+db = PostgreSQLDataBase()
+# db = SQLighter('db.db')
 
 # Languages
 import english as eng
