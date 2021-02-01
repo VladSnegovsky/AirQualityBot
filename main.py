@@ -7,6 +7,7 @@ import asyncio
 import time
 import schedule
 from telegram import ParseMode
+import datetime
 
 # import languages as lang
 import config
@@ -42,6 +43,7 @@ async def send_notification(message, item):
         answer = json.loads(response.text)
         answer = answer["data"]
         new_aqi = answer["aqi"]
+        new_aqi = new_aqi + 50
         if new_aqi >= item[2] + item[3]:
             _idx = air_info.get_idx(response)
             location = get_location_info_db_idx(message, _idx)
@@ -56,12 +58,14 @@ async def send_notification(message, item):
             await bot.send_message(message.from_user.id, message_notification, parse_mode=ParseMode.HTML, disable_notification=False)
 
 
-async def scheduled(message, wait_for):
+async def scheduled(message):
     while True:
-        await asyncio.sleep(wait_for)
-        locations = db.get_all_locations(message.from_user.id)
-        for item in locations:
-            await send_notification(message, item)
+        await asyncio.sleep(60)
+        now = datetime.datetime.now()
+        if now.minute == 0:
+            locations = db.get_all_locations(message.from_user.id)
+            for item in locations:
+                await send_notification(message, item)
 
 
 # =================== First Bot Message
@@ -369,7 +373,7 @@ async def answered(message):
     # ================================================================= Ok ======================
     if message.text == language.button_ok_i_read_it and last_status == status.get_hash("Instructions"):
         await msg_main(message)
-        task = asyncio.ensure_future(scheduled(message, 600))
+        task = asyncio.ensure_future(scheduled(message))
         task
     # ===========================================================================================
 
