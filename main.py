@@ -45,7 +45,6 @@ async def send_notification(message, item):
         print(answer)
         answer = answer["data"]
         new_aqi = answer["aqi"]
-        new_aqi = new_aqi + 50
         if new_aqi >= item[2] + item[3]:
             print("WARNING")
             _idx = air_info.get_idx(response)
