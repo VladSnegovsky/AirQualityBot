@@ -38,20 +38,23 @@ language = eng
 
 # =================== Notifications
 async def send_notification(message, item):
+    print("In func")
     if item[4] == 1:
         response = get_response_by_idx_for_shedule(item[0])
-        print(response)
         answer = json.loads(response.text)
+        print(answer)
         answer = answer["data"]
         new_aqi = answer["aqi"]
         new_aqi = new_aqi + 50
         if new_aqi >= item[2] + item[3]:
+            print("WARNING")
             _idx = air_info.get_idx(response)
             location = get_location_info_db_idx(message, _idx)
             update_last_aqi(message, item[0], new_aqi)
             message_notification = language.create_answer_warning(response, location[0][1])
             await bot.send_message(message.from_user.id, message_notification, parse_mode=ParseMode.HTML, disable_notification=False)
         elif new_aqi <= item[2] - item[3]:
+            print("NOTIFICATION")
             _idx = air_info.get_idx(response)
             location = get_location_info_db_idx(message, _idx)
             update_last_aqi(message, item[0], new_aqi)
@@ -60,10 +63,12 @@ async def send_notification(message, item):
 
 
 async def scheduled(message):
+    print("Here ==========")
     while True:
         await asyncio.sleep(20)
         now = datetime.datetime.now()
         if now.minute == 0:
+            print("Ask ==========")
             locations = db.get_all_locations(message.from_user.id)
             for item in locations:
                 await send_notification(message, item)
