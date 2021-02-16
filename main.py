@@ -63,7 +63,7 @@ async def send_notification(message, item):
 
 
 async def scheduled(message):
-    print("Here ==========")
+    print("Here1 ==========")
     while True:
         await asyncio.sleep(20)
         now = datetime.datetime.now()
