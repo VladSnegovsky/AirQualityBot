@@ -40,6 +40,7 @@ language = eng
 async def send_notification(message, item):
     if item[4] == 1:
         response = get_response_by_idx_for_shedule(item[0])
+        print(response)
         answer = json.loads(response.text)
         answer = answer["data"]
         new_aqi = answer["aqi"]
@@ -60,7 +61,7 @@ async def send_notification(message, item):
 
 async def scheduled(message):
     while True:
-        await asyncio.sleep(60)
+        await asyncio.sleep(20)
         now = datetime.datetime.now()
         if now.minute == 0:
             locations = db.get_all_locations(message.from_user.id)
