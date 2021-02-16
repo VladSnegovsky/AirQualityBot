@@ -68,7 +68,7 @@ async def scheduled(message):
         await asyncio.sleep(20)
         now = datetime.datetime.now()
         print("Here2 ==========")
-        if now.minute == 0:
+        if now.minute == 5:
             print("Ask ==========")
             locations = db.get_all_locations(message.from_user.id)
             for item in locations:
