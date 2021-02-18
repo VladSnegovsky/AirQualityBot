@@ -66,6 +66,7 @@ async def scheduled(message):
     while True:
         await asyncio.sleep(20)
         now = datetime.datetime.now()
+        print(now)
         print("Here2 ==========")
         if now.minute == 12:
             print("Ask ==========")
