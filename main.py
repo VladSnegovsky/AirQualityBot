@@ -68,7 +68,7 @@ async def scheduled(message):
         now = datetime.datetime.now()
         print(now)
         print("Here2 ==========")
-        if now.minute == 12:
+        if now.minute == 20:
             print("Ask ==========")
             locations = db.get_all_locations(message.from_user.id)
             for item in locations:
