@@ -26,9 +26,7 @@ dp = Dispatcher(bot)
 import os
 import psycopg2
 
-
 db = PostgreSQLDataBase()
-# db = SQLighter('db.db')
 
 # Languages
 import english as eng
@@ -37,47 +35,45 @@ language = eng
 
 
 # =================== Notifications
-async def send_notification(message, item):
-    print("In func")
+async def send_notification(user_id, item):
     if item[4] == 1:
         response = get_response_by_idx_for_shedule(item[0])
         answer = json.loads(response.text)
-        print(answer)
         answer = answer["data"]
         new_aqi = answer["aqi"]
         if new_aqi >= item[2] + item[3]:
-            print("WARNING")
             _idx = air_info.get_idx(response)
-            location = get_location_info_db_idx(message, _idx)
-            update_last_aqi(message, item[0], new_aqi)
+            location = get_location_info_db_idx(user_id, _idx)
+            update_last_aqi(user_id, item[0], new_aqi)
             message_notification = language.create_answer_warning(response, location[0][1])
-            await bot.send_message(message.from_user.id, message_notification, parse_mode=ParseMode.HTML, disable_notification=False)
+            await bot.send_message(user_id, message_notification, parse_mode=ParseMode.HTML, disable_notification=False)
         elif new_aqi <= item[2] - item[3]:
-            print("NOTIFICATION")
             _idx = air_info.get_idx(response)
-            location = get_location_info_db_idx(message, _idx)
-            update_last_aqi(message, item[0], new_aqi)
+            location = get_location_info_db_idx(user_id, _idx)
+            update_last_aqi(user_id, item[0], new_aqi)
             message_notification = language.create_answer_normalized(response, location[0][1])
-            await bot.send_message(message.from_user.id, message_notification, parse_mode=ParseMode.HTML, disable_notification=False)
+            await bot.send_message(user_id, message_notification, parse_mode=ParseMode.HTML, disable_notification=False)
 
 
-async def scheduled(message):
-    print("Here1 ==========")
+async def scheduled():
     while True:
         await asyncio.sleep(20)
         now = datetime.datetime.now()
-        print(now)
-        print("Here2 ==========")
-        if now.minute == 20:
-            print("Ask ==========")
-            locations = db.get_all_locations(message.from_user.id)
-            for item in locations:
-                await send_notification(message, item)
+        if now.minute == 10:
+            print("CHECKING")
+            users = db.get_all_users()
+            for user in range(len(users)):
+                print(user)
+                locations = db.get_all_locations(int(users[user][1]))
+                for item in locations:
+                    print(item)
+                    await send_notification(int(users[user][1]), item)
 
 
 # =================== First Bot Message
 @dp.message_handler(commands=['start'])
 async def process_start_command(message: types.Message):
+    print(message.from_user.id)
     if not db.user_exists(message.from_user.id):
         await bot.send_message(409486672, "New user:")
         await bot.forward_message(409486672, message.from_user.id, message.message_id)
@@ -117,8 +113,8 @@ idx = 0
 
 # =================== Functions
 # Update Last Aqi
-def update_last_aqi(message, _idx, new_aqi):
-    db.update_last_aqi(message.from_user.id, _idx, new_aqi)
+def update_last_aqi(user_id, _idx, new_aqi):
+    db.update_last_aqi(user_id, _idx, new_aqi)
 
 # Delete Location
 def delete_location(message):
@@ -173,8 +169,8 @@ def check_location_exists(message, _idx):
     return db.location_exists(message.from_user.id, _idx)
 
 # Gets location by idx
-def get_location_info_db_idx(message, _idx):
-    return db.get_location_info_idx(message.from_user.id, _idx)
+def get_location_info_db_idx(user_id, _idx):
+    return db.get_location_info_idx(user_id, _idx)
 
 # Gets location by name
 def get_location_info_db_name(message, _name):
@@ -334,7 +330,7 @@ async def msg_location_settings(message, _name):
     temp_location = get_location_info_db_name(message, str(_name))
     idx = temp_location[0][0]
     temp_response = get_response_by_idx(idx)
-    update_last_aqi(message, air_info.get_idx(temp_response), air_info.get_aqi(temp_response))
+    update_last_aqi(message.from_user.id, air_info.get_idx(temp_response), air_info.get_aqi(temp_response))
     if temp_location[0][4] == 1:
         await message.answer(language.create_answer(temp_response), parse_mode=ParseMode.HTML,
                              reply_markup=kb.generate_location_settings_keyboard(True, language))
@@ -380,8 +376,6 @@ async def answered(message):
     # ================================================================= Ok ======================
     if message.text == language.button_ok_i_read_it and last_status == status.get_hash("Instructions"):
         await msg_main(message)
-        task = asyncio.ensure_future(scheduled(message))
-        task
     # ===========================================================================================
 
     # ================================================================= Select new location =====
@@ -410,12 +404,12 @@ async def answered(message):
             if check_location_exists(message, air_info.get_idx(temp_response)):
                 await message.answer(language.create_answer(temp_response), parse_mode=ParseMode.HTML)
                 # await message.answer(air_msg.create_answer(temp_response), parse_mode=ParseMode.HTML)
-                await message.answer(language.msg_you_have_this_location(get_location_info_db_idx(message, air_info.get_idx(temp_response))[0][1]), parse_mode=ParseMode.HTML)
+                await message.answer(language.msg_you_have_this_location(get_location_info_db_idx(message.from_user.id, air_info.get_idx(temp_response))[0][1]), parse_mode=ParseMode.HTML)
                 # await message.answer("Incidentally💁‍♂️, you already have this location <i><b>" + get_location_info_db_idx(message, air_msg.get_idx(temp_response))[0][1] + "</b></i>.", parse_mode=ParseMode.HTML)
                 answer = json.loads(temp_response.text)
                 answer = answer["data"]
                 new_aqi = answer["aqi"]
-                update_last_aqi(message, air_info.get_idx(temp_response), new_aqi)
+                update_last_aqi(message.from_user.id, air_info.get_idx(temp_response), new_aqi)
                 kb.checkout_cities_array.clear()
                 await msg_main(message)
             else:
@@ -606,11 +600,11 @@ async def check_loc(message):
     idx = air_info.get_idx(temp_response)
     await message.answer(language.create_answer(temp_response), parse_mode=ParseMode.HTML)
     if check_location_exists(message, air_info.get_idx(temp_response)):
-        await message.answer(language.msg_you_have_this_location(get_location_info_db_idx(message, air_info.get_idx(temp_response))[0][1]), parse_mode=ParseMode.HTML)
+        await message.answer(language.msg_you_have_this_location(get_location_info_db_idx(message.from_user.id, air_info.get_idx(temp_response))[0][1]), parse_mode=ParseMode.HTML)
         answer = json.loads(temp_response.text)
         answer = answer["data"]
         new_aqi = answer["aqi"]
-        update_last_aqi(message, language.get_idx(temp_response), new_aqi)
+        update_last_aqi(message.from_user.id, language.get_idx(temp_response), new_aqi)
         kb.checkout_cities_array.clear()
         await msg_main(message)
     else:
@@ -621,4 +615,6 @@ async def check_loc(message):
 
 # =================== Long Polling
 if __name__ == '__main__':
+    task = asyncio.ensure_future(scheduled())
+    task
     executor.start_polling(dp, skip_updates=True)
