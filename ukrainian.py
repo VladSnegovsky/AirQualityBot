@@ -222,7 +222,6 @@ def create_answer_warning(response, name):
                + compose_a_message(answer)
 
 # Buttons
-button_back = "Назад↩"
 button_select_location = "Обрати нове місце"
 button_my_locations = "Мої локації"
 button_about_this_bot = "Про бота"
@@ -302,3 +301,11 @@ def translate_city(city_eng):
     elif city_eng == "Uzhhorod":
         return "Ужгород"
     # =======================
+
+button_back_to_select = "↩ Повернутися до вибору місця"
+button_back_to_menu = "↩ До меню"
+button_back_to_locations = "↩ Повернутися до локацій"
+button_change_step = "Змінити Крок"
+button_cancel_step = "Відмінити зміну Кроку"
+button_yes_loc = "✅Так, додати"
+button_no_loc = "❌Ні, не треба"

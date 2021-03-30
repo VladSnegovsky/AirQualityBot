@@ -311,4 +311,13 @@ def to_eng(place):
         return "Poltava"
     elif place == "Ужгород":
         return "Uzhhorod"
-    # =======================
+
+
+
+button_back_to_select = "↩ Return to Select"
+button_back_to_menu = "↩ Return to Menu"
+button_back_to_locations = "↩ Return to locations"
+button_change_step = "Change Step"
+button_cancel_step = "Undo Step change"
+button_yes_loc = "✅Yes, add"
+button_no_loc = "❌No, thanks"

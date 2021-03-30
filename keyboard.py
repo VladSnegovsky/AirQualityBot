@@ -13,9 +13,8 @@ keyboard_languages = ReplyKeyboardMarkup(resize_keyboard=True).add(button_Ukrain
 def new_language(language):
     button_english = KeyboardButton("English")
     button_ukrainian = KeyboardButton("Українська")
-    button_back = KeyboardButton(language.button_back)
+    button_back = KeyboardButton(language.button_back_to_menu)
     return ReplyKeyboardMarkup(resize_keyboard=True).add(button_ukrainian, button_english).add(button_back)
-
 
 def ok_i_read_it(language):
     button_ok_i_read_it = KeyboardButton(language.button_ok_i_read_it)
@@ -29,12 +28,11 @@ def main(language):
     button_settings = KeyboardButton(language.button_settings)
     return ReplyKeyboardMarkup(resize_keyboard=True).add(button_select_location, button_my_locations).add(button_information, button_settings)
 
-
 #Add Location
 def add_location(language):
     button_find_me = KeyboardButton(language.button_find_me, request_location=True)
     button_select_from_list = KeyboardButton(language.button_select_from_list)
-    button_back = KeyboardButton(language.button_back)
+    button_back = KeyboardButton(language.button_back_to_menu)
     return ReplyKeyboardMarkup(resize_keyboard=True).add(button_find_me, button_select_from_list).add(button_back)
 
 
@@ -42,6 +40,11 @@ def add_location(language):
 def yes_no(language):
     button_yes = KeyboardButton(language.button_yes)
     button_no = KeyboardButton(language.button_no)
+    return ReplyKeyboardMarkup(resize_keyboard=True).add(button_yes, button_no)
+
+def yes_no_loc(language):
+    button_yes = KeyboardButton(language.button_yes_loc)
+    button_no = KeyboardButton(language.button_no_loc)
     return ReplyKeyboardMarkup(resize_keyboard=True).add(button_yes, button_no)
 
 
@@ -57,7 +60,6 @@ def change_cancel(language):
     button_cancel = KeyboardButton(language.button_cancel)
     return ReplyKeyboardMarkup(resize_keyboard=True).add(button_change, button_cancel)
 
-
 # Step
 def step(language):
     button_10 = KeyboardButton("10")
@@ -69,8 +71,8 @@ def step(language):
     button_40 = KeyboardButton("40")
     button_45 = KeyboardButton("45")
     button_50 = KeyboardButton("50")
-    button_change = KeyboardButton(language.button_change)
-    button_cancel = KeyboardButton(language.button_cancel)
+    button_change = KeyboardButton(language.button_change_step)
+    button_cancel = KeyboardButton(language.button_cancel_step)
     return ReplyKeyboardMarkup(resize_keyboard=True).add(button_10, button_15, button_20).add(button_25, button_30, button_35).add(button_40, button_45, button_50).add(button_change, button_cancel)
 
 
@@ -81,7 +83,7 @@ def generate_location_settings_keyboard(notifications, language):
     button_notifications_on = KeyboardButton(language.button_notifications_on)
     button_notifications_off = KeyboardButton(language.button_notifications_off)
     button_delete_location = KeyboardButton(language.button_delete_location)
-    button_back = KeyboardButton(language.button_back)
+    button_back = KeyboardButton(language.button_back_to_locations)
 
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
     if notifications:
@@ -94,7 +96,6 @@ def generate_location_settings_keyboard(notifications, language):
 # Generate Keyboard from txt file
 checkout_countries_array = []
 checkout_cities_array = []
-
 def generate_keyboard(place, language):
     """Generate Keyboard from txt file"""
     place = place.lower()
@@ -117,7 +118,7 @@ def generate_keyboard(place, language):
             checkout_cities_array.append(language.translate_city(i))
             temp_buttons.append(KeyboardButton(text=language.translate_city(i)))
     keyboard.add(*temp_buttons)
-    button_back = KeyboardButton(language.button_back)
+    button_back = KeyboardButton(language.button_back_to_select)
     keyboard.add(button_back)
     return keyboard
 
@@ -129,6 +130,6 @@ def generate_keyboard_locations_db(language):
     """Generate keyboard from db locations"""
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(*checkout_locations_db)
-    button_back = KeyboardButton(language.button_back)
+    button_back = KeyboardButton(language.button_back_to_menu)
     keyboard.add(button_back)
     return keyboard

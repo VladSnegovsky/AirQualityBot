@@ -48,6 +48,7 @@ async def send_notification(user_id, item):
             message_notification = language.create_answer_warning(response, location[0][1])
             await bot.send_message(user_id, message_notification, parse_mode=ParseMode.HTML, disable_notification=False)
         elif new_aqi <= item[2] - item[3]:
+            print(language)
             _idx = air_info.get_idx(response)
             location = get_location_info_db_idx(user_id, _idx)
             update_last_aqi(user_id, item[0], new_aqi)
@@ -57,23 +58,19 @@ async def send_notification(user_id, item):
 
 async def scheduled():
     while True:
-        await asyncio.sleep(20)
+        await asyncio.sleep(30)
         now = datetime.datetime.now()
         if now.minute == 10:
-            print("CHECKING")
             users = db.get_all_users()
             for user in range(len(users)):
-                print(user)
                 locations = db.get_all_locations(int(users[user][1]))
                 for item in locations:
-                    print(item)
                     await send_notification(int(users[user][1]), item)
 
 
 # =================== First Bot Message
 @dp.message_handler(commands=['start'])
 async def process_start_command(message: types.Message):
-    print(message.from_user.id)
     if not db.user_exists(message.from_user.id):
         await bot.send_message(409486672, "New user:")
         await bot.forward_message(409486672, message.from_user.id, message.message_id)
@@ -188,10 +185,8 @@ def show_all_locations(message):
     if not empty:
         kb.checkout_locations_db = locations_db
         return language.msg_your_locations()
-        # return "Here's your locations😎. Click on location📍 to see informationℹ️.\nYou also can edit it🧐."
     else:
         return language.msg_you_have_no_locations()
-        # return "You have no locations😞."
 
 # String in array?
 def string_in_array_strip(string, array):
@@ -249,35 +244,24 @@ async def msg_select_new_location(message):
     change_status("Select new location")
     await message.answer(language.msg_choose_list_or_location(), reply_markup=kb.add_location(language))
     await message.answer(language.msg_geolocation_is_not_available())
-    # await message.answer("Ok🙂. Now you can choose - share your current location📍 "
-    #                      "or select one from 📃.", reply_markup=kb.keyboard_location)
-    # await message.answer("By the way🤔, geolocation is not available😔 on "
-    #                      "the desktop🖥 version of telegram.")
 
 # Select from list
 # hash "Select from list"
 async def msg_select_from_list(message):
     change_status("Select from list")
     await message.answer(language.msg_list_of_countries(), reply_markup=kb.generate_keyboard("countries", language))
-    # await message.answer("Here is the list of countries🇬🇧🇩🇪. Choose the country you "
-    #                      "need🧐.", reply_markup=kb.generate_keyboard("countries"))
 
 # Add location
 # hash "Add new location"
 async def msg_add_location(message):
     change_status("Add new location")
-    await message.answer(language.msg_do_you_want_to_add_this_location(), reply_markup=kb.yes_no(language))
-    # await message.answer("Do you want to add this location📍 to your list📄? "
-    #                      "You will be notified if the level🌡 of air💨 pollution "
-    #                      "rises⚠️.", reply_markup=kb.keyboard_YesNo)
+    await message.answer(language.msg_do_you_want_to_add_this_location(), reply_markup=kb.yes_no_loc(language))
 
 # Get notification
 # hash "Get notification"
 async def msg_get_notification(message):
     change_status("Get notification")
     await message.answer(language.msg_do_you_want_to_be_notified(), reply_markup=kb.yes_no(language))
-    # await message.answer("Do you🤓 want to be notified about air💨 quality when it "
-    #                      "gets out of order😧?", reply_markup=kb.keyboard_YesNo)
 
 
 # Enter location name
@@ -290,7 +274,6 @@ async def msg_enter_location_name(message):
     global new_name_str
     new_name_str = create_name(message, air_info.get_city_country(global_response))
     await message.answer(language.msg_if_you_will_not_send_it(new_name_str), parse_mode=ParseMode.HTML, reply_markup=kb.add(language))
-    # await message.answer("If you won't send📨 it and click <i>Add</i>, the name will be <i><b>" + new_name_str + "</b></i>.", parse_mode=ParseMode.HTML, reply_markup=kb.keyboard_Add)
 
 async def get_location_name(message):
     global new_name_str
@@ -298,10 +281,8 @@ async def get_location_name(message):
     new_name_str_temp = message.text
     if len(new_name_str_temp) > 50:
         await message.answer(language.msg_maximum_length_50(), reply_markup=kb.add(language))
-        # await message.answer("❗️Maximum length of name must be 5️⃣0️⃣. Write new one.", reply_markup=kb.keyboard_Add)
     elif check_name_db(message, new_name_str_temp):
         await message.answer(language.msg_such_name_is_already_exists())
-        # await message.answer("Such name is already exists🙄.")
     else:
         if new_name_str_temp == language.button_add:
             str_no_conflict = True
@@ -315,7 +296,6 @@ async def msg_my_locations(message):
     change_status("My Locations")
     temp_message = show_all_locations(message)
     if temp_message != language.msg_you_have_no_locations():
-    # if temp_message != "You have no locations😞.":
         await message.answer(temp_message, reply_markup=kb.generate_keyboard_locations_db(language))
     else:
         await message.answer(temp_message)
@@ -334,15 +314,10 @@ async def msg_location_settings(message, _name):
     if temp_location[0][4] == 1:
         await message.answer(language.create_answer(temp_response), parse_mode=ParseMode.HTML,
                              reply_markup=kb.generate_location_settings_keyboard(True, language))
-        # await message.answer(air_msg.create_answer(temp_response), parse_mode=ParseMode.HTML,
-        #                      reply_markup=kb.generate_location_settings_keyboard(True))
     else:
         await message.answer(language.create_answer(temp_response), parse_mode=ParseMode.HTML,
                              reply_markup=kb.generate_location_settings_keyboard(False, language))
-        # await message.answer(air_msg.create_answer(temp_response), parse_mode=ParseMode.HTML,
-        #                      reply_markup=kb.generate_location_settings_keyboard(False))
     await message.answer(language.msg_you_step_for_this_location_is(temp_location[0][3]))
-    # await message.answer("Your step for this location is " + str(temp_location[0][3]) + ".")
 
 
 
@@ -358,23 +333,22 @@ async def answered(message):
     global language
 
     # ================================================================= Back ====================
-    if message.text == language.button_back:
-        if last_status == status.get_hash("Select new location"):
-            await msg_main(message)
-        elif last_status == status.get_hash("Select from list"):
-            await msg_select_new_location(message)
-        elif last_status == status.get_hash("Country"):
-            await msg_select_from_list(message)
-        elif last_status == status.get_hash("My Locations"):
-            await msg_main(message)
-        elif last_status == status.get_hash("Location Settings"):
-            await msg_my_locations(message)
-        elif last_status == status.get_hash("Change language"):
-            await msg_main(message)
+    if message.text == language.button_back_to_menu:
+        await msg_main(message)
+    elif last_status == language.button_back_to_menu:
+        await msg_main(message)
+    elif message.text == language.button_back_to_menu:
+        await msg_main(message)
+    elif message.text == language.button_back_to_select:
+        await msg_select_new_location(message)
+    elif message.text == language.button_back_to_select:
+        await msg_select_from_list(message)
+    elif message.text == language.button_back_to_locations:
+        await msg_my_locations(message)
     # ===========================================================================================
 
     # ================================================================= Ok ======================
-    if message.text == language.button_ok_i_read_it and last_status == status.get_hash("Instructions"):
+    if message.text == language.button_ok_i_read_it:
         await msg_main(message)
     # ===========================================================================================
 
@@ -390,22 +364,16 @@ async def answered(message):
 
     # Cities List
     elif string_in_array_strip(message.text, kb.checkout_countries_array):
-        change_status("Country")
         kb.checkout_countries_array.clear()
         await message.answer(language.msg_choose_a_city(), reply_markup=kb.generate_keyboard(message.text, language))
-        # await message.answer("Now choose a city🏙 you want to know "
-        #                      "about🤔.", reply_markup=kb.generate_keyboard(message.text))
 
     # Info
     elif string_in_array_strip(message.text, kb.checkout_cities_array):
         temp_response = get_response_by_city(message.text)
         if language.create_answer(temp_response) != language.msg_no_stations():
-        # if air_msg.create_answer(temp_response) != "Sorry😔! There are no stations yet🗿🗿🗿. Try to use🤔 your location to find the nearest one.":
             if check_location_exists(message, air_info.get_idx(temp_response)):
                 await message.answer(language.create_answer(temp_response), parse_mode=ParseMode.HTML)
-                # await message.answer(air_msg.create_answer(temp_response), parse_mode=ParseMode.HTML)
                 await message.answer(language.msg_you_have_this_location(get_location_info_db_idx(message.from_user.id, air_info.get_idx(temp_response))[0][1]), parse_mode=ParseMode.HTML)
-                # await message.answer("Incidentally💁‍♂️, you already have this location <i><b>" + get_location_info_db_idx(message, air_msg.get_idx(temp_response))[0][1] + "</b></i>.", parse_mode=ParseMode.HTML)
                 answer = json.loads(temp_response.text)
                 answer = answer["data"]
                 new_aqi = answer["aqi"]
@@ -429,27 +397,25 @@ async def answered(message):
 
     # ================================================================= Yes/No ==================
     # No
-    elif message.text == language.button_no:
-        if last_status == status.get_hash("Add new location"):
-            await msg_main(message)
+    elif message.text == language.button_no_loc:
+        await msg_main(message)
 
-        elif last_status == status.get_hash("Get notification"):
-            _idx = air_info.get_idx(global_response)
-            _last_aqi = air_info.get_aqi(global_response)
-            db.add_location(message.from_user.id, _idx, new_name_str, _last_aqi, False)
-            await msg_main(message)
+    elif message.text == language.button_no:
+        _idx = air_info.get_idx(global_response)
+        _last_aqi = air_info.get_aqi(global_response)
+        db.add_location(message.from_user.id, _idx, new_name_str, _last_aqi, False)
+        await msg_main(message)
 
     # Yes
-    elif message.text == language.button_yes:
-        if last_status == status.get_hash("Add new location"):
-            await msg_enter_location_name(message)
+    elif message.text == language.button_yes_loc:
+        await msg_enter_location_name(message)
 
-        elif last_status == status.get_hash("Get notification"):
-            _idx = air_info.get_idx(global_response)
-            _last_aqi = air_info.get_aqi(global_response)
-            _last_aqi = air_info.get_aqi(global_response)
-            db.add_location(message.from_user.id, _idx, new_name_str, _last_aqi, True)
-            await msg_main(message)
+    elif message.text == language.button_yes:
+        _idx = air_info.get_idx(global_response)
+        _last_aqi = air_info.get_aqi(global_response)
+        _last_aqi = air_info.get_aqi(global_response)
+        db.add_location(message.from_user.id, _idx, new_name_str, _last_aqi, True)
+        await msg_main(message)
     # ===========================================================================================
 
     # ================================================================= My locations ============
@@ -463,13 +429,9 @@ async def answered(message):
 
     elif message.text == language.button_edit_name:
         await message.answer(language.msg_write_new_name_change(), reply_markup=kb.change_cancel(language))
-        # await message.answer("Write✍️ new name for this location📍 and click🖱 change.", reply_markup=kb.keyboard_ChangeCancel)
-        change_status("Edit Name")
 
     elif message.text == language.button_edit_step:
         await message.answer(language.msg_select_new_step(), reply_markup=kb.step(language))
-        # await message.answer("Select new Step on your keyboard⌨️.", reply_markup=kb.keyboard_Step)
-        change_status("Edit Step")
 
     elif message.text == language.button_notifications_on:
         update_notifications(message, True)
@@ -490,26 +452,26 @@ async def answered(message):
 
     # ================================================================= Change ==================
     elif message.text == language.button_change:
-        if last_status == status.get_hash("Edit Name"):
-            if new_name_str == "":
-                new_name_str = temp_old_name
-                await msg_location_settings(message, temp_old_name)
-            else:
-                update_location_name(message, new_name_str)
-                await msg_location_settings(message, new_name_str)
-        elif last_status == status.get_hash("Edit Step"):
-            update_step(message)
+        if new_name_str == "":
+            new_name_str = temp_old_name
+            await msg_location_settings(message, temp_old_name)
+        else:
+            update_location_name(message, new_name_str)
             await msg_location_settings(message, new_name_str)
+
+    elif message.text == language.button_change_step:
+        update_step(message)
+        await msg_location_settings(message, new_name_str)
 
     # ===========================================================================================
 
     # ================================================================= Cancel ==================
     elif message.text == language.button_cancel:
-        if last_status == status.get_hash("Edit Name"):
-            new_name_str = temp_old_name
-            await msg_location_settings(message, temp_old_name)
-        elif last_status == status.get_hash("Edit Step"):
-            await msg_location_settings(message, new_name_str)
+        new_name_str = temp_old_name
+        await msg_location_settings(message, temp_old_name)
+
+    elif message.text == language.button_cancel_step:
+        await msg_location_settings(message, new_name_str)
     # ===========================================================================================
 
     # ================================================================= Add =====================
@@ -517,23 +479,12 @@ async def answered(message):
         if not str_no_conflict:
             await get_location_name(message)
         await message.answer(language.msg_here_is_the_name(new_name_str), parse_mode=ParseMode.HTML)
-        # await message.answer("Thx😃, here is the name for this location - <i><b>" + new_name_str + "</b></i>.", parse_mode=ParseMode.HTML)
         await msg_get_notification(message)
     # ===========================================================================================
 
     # ================================================================= About this Bot ==========
     elif message.text == language.button_about_this_bot:
         await message.answer(language.msg_about_this_bot(), parse_mode=ParseMode.HTML)
-        # await message.answer("Hi! My name is Vlad.\n\nI made this bot as a term paper that, after "
-        #                      "completion, I wanted it to run on the server for permanent work.\n\nThis bot "
-        #                      "will notify you about changes in the level of air pollution in different "
-        #                      "cities.\n\nYou can add a new location by clicking <i>Select New Location</i>. "
-        #                      "After determining the desired location, he will ask whether to add it to your "
-        #                      "list of locations. Answer as you like.\n\nTo see all your locations - click "
-        #                      "<i>My Locations</i>. To see the current information about the location click on it. "
-        #                      "You will also see the settings there.\n\nIf you find any bug, have a question "
-        #                      "or have any suggestions, you can write to me @snegovskyvlad.\n\nThank you for "
-        #                      "using this bot.", parse_mode=ParseMode.HTML)
         await msg_main(message)
     # ===========================================================================================
 
