@@ -77,7 +77,6 @@ async def scheduled():
 @dp.message_handler(commands=['start'])
 async def process_start_command(message: types.Message):
     if not db.user_exists(message.from_user.id):
-        await bot.send_message(409486672, "New user:")
         await bot.forward_message(409486672, message.from_user.id, message.message_id)
         db.add_user(message.from_user.id)
     change_status("Choose language")
@@ -221,7 +220,7 @@ def get_response_by_city(_name):
     global_response = requests.get("https://api.waqi.info/feed/" + _name + "/?token=" + config.API_AIR_TOKEN)
     return global_response
 
-
+# === temp
 # =================== Messages
 # After pushing ...
 # First Message after choosing language
