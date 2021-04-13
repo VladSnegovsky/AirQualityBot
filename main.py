@@ -41,8 +41,6 @@ async def send_notification(user_id, item):
         answer = json.loads(response.text)
         answer = answer["data"]
         new_aqi = answer["aqi"]
-        print(new_aqi)
-        print(item[2])
         if new_aqi >= item[2] + item[3]:
             _idx = air_info.get_idx(response)
             location = get_location_info_db_idx(user_id, _idx)
@@ -50,7 +48,6 @@ async def send_notification(user_id, item):
             message_notification = language.create_answer_warning(response, location[0][1])
             await bot.send_message(user_id, message_notification, parse_mode=ParseMode.HTML, disable_notification=False)
         elif new_aqi <= item[2] - item[3]:
-            print(language)
             _idx = air_info.get_idx(response)
             location = get_location_info_db_idx(user_id, _idx)
             update_last_aqi(user_id, item[0], new_aqi)
@@ -60,16 +57,14 @@ async def send_notification(user_id, item):
 
 async def scheduled():
     while True:
-        await asyncio.sleep(30)
+        await asyncio.sleep(20)
         now = datetime.datetime.now()
-        if now.minute == 10:
-            await bot.send_message(409486672, "=== CHECKING ===")
+        if now.minute == 0:
+            await bot.send_message(409486672, "Check")
             users = db.get_all_users()
             for user in range(len(users)):
-                print(user)
                 locations = db.get_all_locations(int(users[user][1]))
                 for item in locations:
-                    print(item)
                     await send_notification(int(users[user][1]), item)
 
 
