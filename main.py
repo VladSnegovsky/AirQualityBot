@@ -142,7 +142,6 @@ async def get_name(message):
         new_name_str = ""
     elif len(new_name_str_temp) > 50:
         await message.answer(language.msg_maximum_length_50(), reply_markup=kb.change_cancel(language), parse_mode=ParseMode.HTML)
-        # await message.answer("❗️Maximum length of name must be 5️⃣0️⃣. Write new one.", reply_markup=kb.keyboard_ChangeCancel, parse_mode=ParseMode.HTML)
     else:
         new_name_str = new_name_str_temp.strip()
 
@@ -187,7 +186,6 @@ def show_all_locations(message):
     else:
         return language.msg_you_have_no_locations()
 
-# String in array?
 def string_in_array_strip(string, array):
     result = False
     for item in array:
