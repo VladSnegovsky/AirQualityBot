@@ -205,6 +205,9 @@ def get_response_by_idx(_idx):
 
 def get_response_by_location(_latitude, _longitude):
     global global_response
+    print(_latitude)
+    print(_longitude)
+    print("https://api.waqi.info/feed/geo:" + _latitude + ";" + _longitude + "/?token=" + config.API_AIR_TOKEN)
     global_response = requests.get("https://api.waqi.info/feed/geo:" + _latitude + ";" + _longitude + "/?token=" + config.API_AIR_TOKEN)
     return global_response
 
@@ -328,6 +331,7 @@ async def answered(message):
     global temp_old_name
     global new_step
     global language
+    global last_status
 
     # ================================================================= Back ====================
     if message.text == language.button_back_to_menu:
@@ -425,9 +429,11 @@ async def answered(message):
         await msg_location_settings(message, message.text)
 
     elif message.text == language.button_edit_name:
+        last_status = status.get_hash("Enter location name")
         await message.answer(language.msg_write_new_name_change(), reply_markup=kb.change_cancel(language))
 
     elif message.text == language.button_edit_step:
+        last_status = status.get_hash("Edit Step")
         await message.answer(language.msg_select_new_step(), reply_markup=kb.step(language))
 
     elif message.text == language.button_notifications_on:
@@ -487,6 +493,7 @@ async def answered(message):
 
     # ================================================================= Settings ================
     elif message.text == language.button_settings:
+        last_status = status.get_hash("Change language")
         await msg_change_language(message)
     # ===========================================================================================
 
