@@ -60,7 +60,6 @@ async def scheduled():
         await asyncio.sleep(20)
         now = datetime.datetime.now()
         if now.minute == 0:
-            await bot.send_message(409486672, "Check")
             users = db.get_all_users()
             for user in range(len(users)):
                 locations = db.get_all_locations(int(users[user][1]))
@@ -72,7 +71,6 @@ async def scheduled():
 @dp.message_handler(commands=['start'])
 async def process_start_command(message: types.Message):
     if not db.user_exists(message.from_user.id):
-        await bot.forward_message(409486672, message.from_user.id, message.message_id)
         db.add_user(message.from_user.id)
     change_status("Choose language")
     await message.answer("Hi! Before start, p󠁥󠁿lease, choose language. 🇬🇧\n"

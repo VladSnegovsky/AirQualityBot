@@ -300,7 +300,6 @@ def translate_city(city_eng):
         return "Полтава"
     elif city_eng == "Uzhhorod":
         return "Ужгород"
-    # =======================
 
 button_back_to_select = "↩ Повернутися до вибору місця"
 button_back_to_menu = "↩ До меню"

@@ -1,6 +1,3 @@
-# From: https://www.convertstring.com/ru/Hash/MD5
-# MD5 Hash Generator
-
 class Hash:
     class Rec:
         def __init__(self, _message, _hash):
