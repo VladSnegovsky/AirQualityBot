@@ -12,9 +12,9 @@ keyboard_languages = ReplyKeyboardMarkup(resize_keyboard=True).add(button_Ukrain
 
 def new_language(language):
     button_english = KeyboardButton("English")
-    button_ukrainian = KeyboardButton("Українська")
+    # button_ukrainian = KeyboardButton("Українська")
     button_back = KeyboardButton(language.button_back_to_menu)
-    return ReplyKeyboardMarkup(resize_keyboard=True).add(button_ukrainian, button_english).add(button_back)
+    return ReplyKeyboardMarkup(resize_keyboard=True).add(button_english).add(button_back)
 
 def ok_i_read_it(language):
     button_ok_i_read_it = KeyboardButton(language.button_ok_i_read_it)
